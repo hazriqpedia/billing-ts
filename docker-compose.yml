@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres
+    container_name: billing-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: CUSTOMER_BILLING_PORTAL
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: billing-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: CUSTOMER_BILLING_PORTAL
+    volumes:
+      - .:/app
+    command: npm run start:prod
+
+volumes:
+  pgdata:

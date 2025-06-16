@@ -1,0 +1,38 @@
+GET http://localhost:3000/billing
+Accept: application/json
+
+###
+
+GET http://localhost:3000/billing?productCode=6000
+Accept: application/json
+
+###
+
+
+POST http://localhost:3000/billing
+Content-Type: application/json
+role: admin
+
+{
+  "productCode": 6001,
+  "location": "West Malaysia",
+  "premiumPaid": 126
+}
+
+###
+
+### Update billing record by productCode (Admin only)
+PUT http://localhost:3000/billing?productCode=6000
+Content-Type: application/json
+role: admin
+
+{
+  "location": "West Malaysia",
+  "premiumPaid": 456.78
+}
+
+###
+
+### Delete billing record by productCode (Admin only)
+DELETE http://localhost:3000/billing?productCode=60001
+role: admin

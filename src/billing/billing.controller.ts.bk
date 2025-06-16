@@ -1,0 +1,48 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Query,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
+import { BillingService } from './billing.service';
+import { CreateBillingDto } from './dto/create-billing.dto';
+import { UpdateBillingDto } from './dto/update-billing.dto';
+import { RolesGuard } from '../middleware/roles.middleware';
+
+@Controller('billing')
+export class BillingController {
+  constructor(private readonly billingService: BillingService) {}
+
+  @Get()
+  getAll(
+    @Query('productCode') productCode: number,
+    @Query('location') location: string,
+  ) {
+    return this.billingService.findAll(productCode, location);
+  }
+
+  @Post()
+  @UseGuards(RolesGuard)
+  create(@Body() dto: CreateBillingDto) {
+    return this.billingService.create(dto);
+  }
+
+  @Put()
+  @UseGuards(RolesGuard)
+  update(
+    @Query('productCode') productCode: number,
+    @Body() dto: UpdateBillingDto,
+  ) {
+    return this.billingService.update(productCode, dto);
+  }
+
+  @Delete()
+  @UseGuards(RolesGuard)
+  remove(@Query('productCode') productCode: number) {
+    return this.billingService.remove(productCode);
+  }
+}
