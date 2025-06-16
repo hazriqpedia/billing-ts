@@ -13,9 +13,10 @@ export class BillingService {
   ) {}
 
   findAll(productCode?: number, location?: string) {
-    const where: any = {};
-    if (productCode) where.productCode = productCode;
-    if (location) where.location = location;
+    const where: Partial<Pick<Billing, 'productCode' | 'location'>> = {};
+
+    if (productCode !== undefined) where.productCode = productCode;
+    if (location !== undefined) where.location = location;
     return this.billingRepo.find({ where });
   }
 

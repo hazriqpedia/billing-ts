@@ -1,5 +1,6 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { RolesGuard } from './roles.middleware';
+import { Request } from 'express';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
@@ -11,13 +12,13 @@ describe('RolesGuard', () => {
   const mockContext = (role?: string): ExecutionContext =>
     ({
       switchToHttp: () => ({
-        getRequest: () => ({
+        getRequest: (): Partial<Request> => ({
           headers: {
             role,
           },
         }),
       }),
-    }) as any;
+    }) as unknown as ExecutionContext;
 
   it('should allow if role is admin', () => {
     expect(guard.canActivate(mockContext('admin'))).toBe(true);

@@ -1,22 +1,3 @@
-// import { Test, TestingModule } from '@nestjs/testing';
-// import { BillingController } from './billing.controller';
-
-// describe('BillingController', () => {
-//   let controller: BillingController;
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [BillingController],
-//     }).compile();
-
-//     controller = module.get<BillingController>(BillingController);
-//   });
-
-//   it('should be defined', () => {
-//     expect(controller).toBeDefined();
-//   });
-// });
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { BillingController } from './billing.controller';
 import { BillingService } from './billing.service';
@@ -24,7 +5,7 @@ import { CreateBillingDto } from './dto/create-billing.dto';
 
 describe('BillingController', () => {
   let controller: BillingController;
-  let service: BillingService;
+  // let service: BillingService;
 
   const mockService = {
     findAll: jest.fn(),
@@ -45,7 +26,7 @@ describe('BillingController', () => {
     }).compile();
 
     controller = module.get<BillingController>(BillingController);
-    service = module.get<BillingService>(BillingService);
+    // service = module.get<BillingService>(BillingService);
   });
 
   it('should get all records', async () => {
