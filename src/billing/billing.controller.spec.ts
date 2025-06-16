@@ -2,6 +2,20 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BillingController } from './billing.controller';
 import { BillingService } from './billing.service';
 import { CreateBillingDto } from './dto/create-billing.dto';
+import { UserService } from '../user/user.service';
+
+const mockUser = {
+  id: 1,
+  email: 'test@example.com',
+  firstName: 'Test',
+  lastName: 'User',
+  photo: 'https://img.com/photo.jpg',
+  billings: [],
+};
+
+const mockUserService = {
+  findOne: jest.fn().mockResolvedValue(mockUser),
+};
 
 describe('BillingController', () => {
   let controller: BillingController;
@@ -21,6 +35,10 @@ describe('BillingController', () => {
         {
           provide: BillingService,
           useValue: mockService,
+        },
+        {
+          provide: UserService,
+          useValue: mockUserService,
         },
       ],
     }).compile();
@@ -43,7 +61,7 @@ describe('BillingController', () => {
       premiumPaid: 100.5,
     };
     mockService.create.mockResolvedValue({ id: 1, ...dto });
-    const result = await controller.create(dto);
+    const result = await controller.create(1, dto);
     expect(result).toEqual({ id: 1, ...dto });
   });
 });

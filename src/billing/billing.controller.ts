@@ -7,6 +7,7 @@ import {
   Query,
   Body,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { BillingService } from './billing.service';
 import { CreateBillingDto } from './dto/create-billing.dto';
@@ -14,6 +15,7 @@ import { UpdateBillingDto } from './dto/update-billing.dto';
 import { QueryBillingDto } from './dto/query-billing.dto';
 import { ResponseBillingDto } from './dto/response-billing.dto';
 import { RolesGuard } from '../middleware/roles.middleware';
+import { UserService } from '../user/user.service';
 import {
   ApiTags,
   ApiQuery,
@@ -27,7 +29,10 @@ import {
 @ApiTags('Billing')
 @Controller('billing')
 export class BillingController {
-  constructor(private readonly billingService: BillingService) {}
+  constructor(
+    private readonly billingService: BillingService,
+    private readonly userService: UserService,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -44,10 +49,14 @@ export class BillingController {
   @UseGuards(RolesGuard)
   @ApiSecurity('role-header')
   @ApiOperation({ summary: 'Create a new billing record (Admin only)' })
+  @ApiQuery({ name: 'userId', required: true, type: Number })
   @ApiBody({ type: CreateBillingDto })
   @ApiResponse({ status: 201, type: ResponseBillingDto })
-  create(@Body() dto: CreateBillingDto) {
-    return this.billingService.create(dto);
+  async create(@Query('userId') userId: number, @Body() dto: CreateBillingDto) {
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.billingService.create(dto, user);
   }
 
   @Put()
@@ -57,13 +66,18 @@ export class BillingController {
     summary: 'Update a billing record by productCode (Admin only)',
   })
   @ApiQuery({ name: 'productCode', required: true, type: Number })
+  @ApiQuery({ name: 'userId', required: true, type: Number })
   @ApiBody({ type: UpdateBillingDto })
   @ApiResponse({ status: 200, type: ResponseBillingDto })
-  update(
+  async update(
     @Query('productCode') productCode: number,
+    @Query('userId') userId: number,
     @Body() dto: UpdateBillingDto,
   ) {
-    return this.billingService.update(productCode, dto);
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.billingService.update(productCode, dto, user);
   }
 
   @Delete()
@@ -73,8 +87,15 @@ export class BillingController {
     summary: 'Delete a billing record by productCode (Admin only)',
   })
   @ApiQuery({ name: 'productCode', required: true, type: Number })
+  @ApiQuery({ name: 'userId', required: true, type: Number })
   @ApiResponse({ status: 200, description: 'Billing record deleted' })
-  remove(@Query('productCode') productCode: number) {
-    return this.billingService.remove(productCode);
+  async remove(
+    @Query('productCode') productCode: number,
+    @Query('userId') userId: number,
+  ) {
+    const user = await this.userService.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    return this.billingService.remove(productCode, user);
   }
 }

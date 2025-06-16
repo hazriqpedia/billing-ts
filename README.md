@@ -8,19 +8,32 @@ A simple RESTful Billing API built with [NestJS](https://nestjs.com/), [TypeORM]
 
 ```
 src/
-├── billing/
+├── billing/                # Billing module (CRUD for billing records)
 │   ├── billing.controller.ts
 │   ├── billing.service.ts
 │   ├── billing.entity.ts
-│   ├── dto/
-│   └── ...
-├── middleware/
-│   └── roles.middleware.ts
-├── user/                   <-- (future feature)
-│   └── user.entity.ts
-├── app.module.ts
-├── main.ts
+│   └── dto/
+├── user/                   # User module (create/retrieve users)
+│   ├── user.controller.ts
+│   ├── user.service.ts
+│   ├── user.entity.ts
+│   └── dto/
+├── middleware/             # Custom role guard middleware
+├── app.module.ts           # Root module wiring everything
+└── main.ts                 # Application bootstrap
+
 ```
+
+| Module          | Description                                                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| `UserModule`    | Manages user data such as email, name, and photo. Required before creating billing records.     |
+| `BillingModule` | Handles all billing records. Each billing record is **associated with one user** (Many to One). |
+
+Workflows:
+
+- `POST /users` => creates a user.
+- `POST /billing?userId=...` => creates a billing record linked to that user.
+- `GET /billing` => includes nested user details in the response.
 
 ---
 
@@ -125,8 +138,9 @@ role: admin
 
 ## To-Do (Next Features)
 
-- [ ] Add `/users` endpoint and associate billing with users
+- [ ] Add guards to Users Module
 - [ ] Add pagination and sorting to `/billing`
+- [ ] Search support for user names or billing location
 
 ---
 
